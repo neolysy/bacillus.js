@@ -1,9 +1,10 @@
+/** @namespace */
 env = {
-	cells: [],
+	population: [],
 	places: [],
 	maxLeft: 1000,
 	maxTop: 1000,
-	maxPopulation: 5000,
+	maxPopulation: 15000,
 	chance: 1000,
 	canvas: null,
 	iterator: null,
@@ -14,26 +15,31 @@ env = {
 		this.canvas.height = env.maxTop;
 
 		// creates first cell
-		var parent = new Cell();
-		// var parent2 = new Cell({pos: [50, 100], color: [15, 207, 110]});
-		// var parent3 = new Cell({pos: [150, 100]});
-		// var parent4 = new Cell({pos: [200, 150]});
-		// var parent5 = new Cell({pos: [300, 200]});
+		
+		var parent = new Cell({pos: [50, 100], color: [15, 207, 110]});
+		var parent2 = new Cell({pos: [75, 75], color: [33, 87, 181]});
+		var parent3 = new Cell({pos: [85, 65], color: [175, 15, 15]});
 
-		this.attachCanvasEvents();
+		this.addCell(parent);
+		this.addCell(parent2);
+		this.addCell(parent3);
+
+		this.attachEvents();
 	},
 
 	render: function() {
-		env.cataclysm();
+		if (config.useCataclysm) {
+			env.cataclysm();
+		}
 
 		var canvas = document.getElementById('field');
 		var ctx = canvas.getContext('2d');
-		var rgb, 
-			cellsArr = [];
+		var cellsArr = [];
+		var rgb, canReproduce;
 
 		ctx.clearRect ( 0 , 0 , canvas.width, canvas.height );
 
-		env.cells.forEach(function(cell, index) {
+		env.population.forEach(function(cell, index) {
 			rgb = cell.color;
 			ctx.fillStyle = "rgb(" + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ")";
 			ctx.fillRect(cell.pos[0]*cell.size, cell.pos[1]*cell.size, cell.size, cell.size);
@@ -43,19 +49,35 @@ env = {
 			
 			if (cell.timeLeft !== 0) {
 				cellsArr.push(cell);
-			} else {
-				env.places[cell.pos[0]][cell.pos[1]] = undefined;
-			}
+				canReproduce = cell.canReproduce();
 
-			if (cell.canReproduce()) {
-				var child = cell.reproduce();
-				if (child) cellsArr.push(child);
-			} else if (cell.canMove) {
-				cell.move();
+				if (canReproduce) {
+					var child = cell.reproduce();
+					if (child) cellsArr.push(child);
+				} else if (!canReproduce && cell.canMove) {
+					cell.move();
+				}
+			} else {
+				delete env.places[cell.pos[0]][cell.pos[1]];
 			}
 		});
 
-		env.cells = cellsArr;
+		env.population = cellsArr;
+	},
+
+	/**
+	 * Adds new cell instance to population array
+	 * @param {object} cell - Cell inctance
+	 * @returns {array} Returns updated population array
+	 */
+	addCell: function(cell) {
+		if (_.isUndefined(this.places[cell.pos[0]])) {
+			this.places[cell.pos[0]] = [];
+		}
+		this.places[cell.pos[0]][cell.pos[1]] = true;
+		this.population.push(cell);
+
+		return this.population;
 	},
 
 	cataclysm: function() {
@@ -64,12 +86,12 @@ env = {
 
 		console.log('cataclysm');
 
-		clearInterval(this.iterator);
+		this.stop();
 
 		var cond = this.getCataclysmConditions();
 		var res = [];
 
-		this.cells.forEach(_.bind(function(cell, index) {
+		this.population.forEach(_.bind(function(cell, index) {
 			if (cell.lifeTime > cond.lifeTime && cell.timeLeft > cond.timeLeft) {
 				_.extend(cell, cell.changeColor());
 				res.push(cell);
@@ -78,13 +100,13 @@ env = {
 			}
 		}, this));
 
-		this.cells = res;
-		this.iterator = setInterval(this.render, 100);
+		this.population = res;
+		this.play();
 	},
 
 	getCataclysmConditions: function() {
-		var lifeTimeMax = _.max(this.cells, function(cell){ return cell.lifeTime; }),
-			lifeTimeMin = _.min(this.cells, function(cell){ return cell.lifeTime; }),
+		var lifeTimeMax = _.max(this.population, function(cell){ return cell.lifeTime; }),
+			lifeTimeMin = _.min(this.population, function(cell){ return cell.lifeTime; }),
 			lifeTime = (lifeTimeMax.lifeTime + lifeTimeMin.lifeTime)/2;
 
 		return {
@@ -93,7 +115,7 @@ env = {
 		};
 	},
 
-	attachCanvasEvents: function() {
+	attachEvents: function() {
 		this.canvas.addEventListener('click', _.bind(function() {
 			this[this.iterator ? 'stop' : 'play']();
 		}, this), false);
@@ -102,7 +124,7 @@ env = {
 	},
 
 	/**
-	 * Starts cells actions
+	 * Starts population actions
 	 * @returns {Object} Returns current environment instance
 	 */
 	play: function() {

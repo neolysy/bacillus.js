@@ -16,18 +16,12 @@ function Cell(options) {
 		fat: 30
 	};
 	this.fatPerReproduce = this.reproductionAfter.fat;
-	this.color = [33, 87, 181];
+	//this.color = [33, 87, 181];
 
 	this.pos = [Math.round(env.maxLeft/(2*this.size)),Math.round(env.maxTop/(2*this.size))];
 	this.fat = 0;
 
 	_.extend(this, options || {});
-
-	if (_.isUndefined(env.places[this.pos[0]])) {
-		env.places[this.pos[0]] = [];
-	}
-	env.places[this.pos[0]][this.pos[1]] = true;
-	env.cells.push(this);
 }
 
 Cell.prototype.move = function() {
@@ -35,7 +29,9 @@ Cell.prototype.move = function() {
 		this.fat -= this.fatPerMove;
 		var freePlace = this.getNearestFreePlace();
 		if (freePlace) {
-			env.places[this.pos[0]][this.pos[1]] = undefined;
+			if (env.places[this.pos[0]] && env.places[this.pos[0]][this.pos[1]]) {
+				delete env.places[this.pos[0]][this.pos[1]];
+			}
 			if (_.isUndefined(env.places[freePlace[0]])) {
 				env.places[freePlace[0]] = [];
 			}
