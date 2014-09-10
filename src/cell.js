@@ -1,39 +1,3 @@
-var renderAll = function() {
-	env.cataclysm();
-
-
-	var canvas = document.getElementById('field');
-	var ctx = canvas.getContext('2d');
-	var rgb, 
-		cellsArr = [];
-
-	ctx.clearRect ( 0 , 0 , canvas.width, canvas.height );
-
-	env.cells.forEach(function(cell, index) {
-		rgb = cell.color;
-		ctx.fillStyle = "rgb(" + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ")";
-		ctx.fillRect(cell.pos[0]*cell.size, cell.pos[1]*cell.size, cell.size, cell.size);
-
-		cell.timeLeft--;
-		cell.fat += cell.fatPerIteration;
-		
-		if (cell.timeLeft != 0) {
-			cellsArr.push(cell);
-		} else {
-			env.places[cell.pos[0]][cell.pos[1]] = undefined;
-		}
-
-		if (cell.canReproduce()) {
-			var child = cell.reproduce();
-			if (child) cellsArr.push(child);
-		} else if (cell.canMove) {
-			cell.move();
-		}
-	});
-
-	env.cells = cellsArr;
-}
-
 function Cell(options) {
 	this.size = 2;
 	this.lifeTime = 50;
@@ -52,7 +16,7 @@ function Cell(options) {
 	this.pos = [Math.round(env.maxLeft/(2*this.size)),Math.round(env.maxTop/(2*this.size))];
 	this.fat = 0;
 
-	$.extend(this, options || {});
+	_.extend(this, options || {});
 
 	if (_.isUndefined(env.places[this.pos[0]])) {
 		env.places[this.pos[0]] = [];
@@ -75,7 +39,7 @@ Cell.prototype.move = function() {
 			this.pos = freePlace;
 		}
 	}
-}
+};
 
 Cell.prototype.reproduce = function() {
 	this.fat -= this.fatPerReproduce;
@@ -83,16 +47,16 @@ Cell.prototype.reproduce = function() {
 	var nearestPlace = this.getNearestFreePlace();
 	if (!nearestPlace) return false;
 
-	var options = this.getChildOptions({pos: nearestPlace});
+	var options = this.getChildOptions(_.extend(this, {pos: nearestPlace}));
 	return new Cell(options);
-}
+};
 
 Cell.prototype.canReproduce = function() {
 	var options = this.reproductionAfter;
-	return this.fat >= options.fat 
-			&& env.cells.length < env.maxPopulation
-			&& (this.lifeTime - this.timeLeft >= options.age);
-}
+	return this.fat >= options.fat && 
+			env.cells.length < env.maxPopulation && 
+			(this.lifeTime - this.timeLeft >= options.age);
+};
 
 Cell.prototype.getNearestFreePlace = function() {
 	var left = this.pos[0],
@@ -114,7 +78,7 @@ Cell.prototype.getNearestFreePlace = function() {
 	}
 	//console.log('NOT FOUND');
 	return false;
-}
+};
 
 Cell.prototype.getChildOptions = function(defaults) {
 	var randVal = Math.round(Math.random()*env.chance),
@@ -126,19 +90,19 @@ Cell.prototype.getChildOptions = function(defaults) {
 	options.reproductionAfter.age = reproductionAge > 0 && reproductionAge < options.lifeTime ? reproductionAge : 1;
 	options.reproductionAfter.fat = options.reproductionAfter.age*10;
 
-	return $.extend(
+	return _.extend(
 		options,
 		randVal > env.chance/2 ? this.changeLifeTime() : {},
 		randVal == Math.round(env.chance/3) ? this.changeColor() : {},
 		randVal > env.chance/10 && randVal < 2*env.chance/10 ? this.changeMovable() : {}
 	);
-}
+};
 
 //mutations
 
 Cell.prototype.changeSize = function() {
 	return {size: this.size + 1};
-}
+};
 
 Cell.prototype.changeLifeTime = function() {
 	var lifeRandom = Math.round(Math.random()*10);
@@ -147,7 +111,7 @@ Cell.prototype.changeLifeTime = function() {
 		lifeTime: lifeTime,
 		timeLeft: lifeTime
 	};
-}
+};
 
 Cell.prototype.changeColor = function() {
 	var colorNum = Math.round(Math.random()*3);
@@ -169,4 +133,4 @@ Cell.prototype.changeMovable = function() {
 			fat: this.reproductionAfter.fat - 10
 		}
 	};
-}
+};
