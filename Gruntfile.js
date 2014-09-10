@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 		watch: {
 			scripts: {
 				files: ['Gruntfile.js', 'src/*.js'],
-				tasks: ['jshint', 'uglify'],
+				tasks: ['jshint', 'uglify', 'jsdoc'],
 				options: {
 					spawn: false,
 					reload: true
@@ -24,6 +24,14 @@ module.exports = function(grunt) {
 		},
 		jshint: {
 			all: ['Gruntfile.js', 'src/*.js']
+		},
+		jsdoc : {
+			dist : {
+				src: ['src/*.js', 'test/*.js'], 
+				options: {
+					destination: 'doc'
+				}
+			}
 		}
 	});
 
@@ -31,8 +39,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-jsdoc');
 
 	// Default task(s).
-	grunt.registerTask('default', ['uglify', 'watch', 'jshint']);
+	grunt.registerTask('default', ['uglify', 'watch', 'jshint', 'jsdoc']);
 
 };

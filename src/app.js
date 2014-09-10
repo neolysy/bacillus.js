@@ -3,7 +3,7 @@ env = {
 	places: [],
 	maxLeft: 1000,
 	maxTop: 1000,
-	maxPopulation: 15000,
+	maxPopulation: 5000,
 	chance: 1000,
 
 	init: function() {
@@ -11,17 +11,17 @@ env = {
 		canvas.width = env.maxLeft;
 		canvas.height = env.maxTop;
 
-		// render first cell
+		// creates first cell
 		var parent = new Cell();
 		// var parent2 = new Cell({pos: [50, 100], color: [15, 207, 110]});
 		// var parent3 = new Cell({pos: [150, 100]});
 		// var parent4 = new Cell({pos: [200, 150]});
 		// var parent5 = new Cell({pos: [300, 200]});
 
-		this.iterator = setInterval(this.renderAll, 100);
+		this.iterator = setInterval(this.render, 100);
 	},
 
-	renderAll: function() {
+	render: function() {
 		env.cataclysm();
 
 		var canvas = document.getElementById('field');
@@ -57,7 +57,7 @@ env = {
 	},
 
 	cataclysm: function() {
-		var randVal = Math.round(Math.random()*100);
+		var randVal = Math.round(Math.random()*200);
 		if (randVal !== 27) return;
 
 		console.log('cataclysm');
@@ -77,7 +77,7 @@ env = {
 		}, this));
 
 		this.cells = res;
-		this.iterator = setInterval(this.renderAll, 100);
+		this.iterator = setInterval(this.render, 100);
 	},
 
 	getCataclysmConditions: function() {
