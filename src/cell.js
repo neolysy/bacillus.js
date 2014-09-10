@@ -47,12 +47,15 @@ Cell.prototype.move = function() {
 };
 
 Cell.prototype.reproduce = function() {
+	var nearestPlace, options;
+
 	this.fat -= this.fatPerReproduce;
 
-	var nearestPlace = this.getNearestFreePlace();
+	nearestPlace = this.getNearestFreePlace();
 	if (!nearestPlace) return false;
 
-	var options = this.getChildOptions({pos: nearestPlace});
+	options = this.getChildOptions({pos: nearestPlace});
+
 	return new Cell(options);
 };
 
@@ -86,19 +89,20 @@ Cell.prototype.getNearestFreePlace = function() {
 };
 
 Cell.prototype.getChildOptions = function(defaults) {
-	var randVal = Math.round(Math.random()*env.chance),
-		options = defaults || {};
+	var randVal = Math.round(Math.random()*env.chance);
+	var options = defaults || {};
+	var reproductionAge;
 
 	options.reproductionAfter = this.reproductionAfter;
 
-	var reproductionAge = this.reproductionAfter.age + (Math.round(Math.random()*10) > 5 ? -1 : 1);
+	reproductionAge = this.reproductionAfter.age + (Math.round(Math.random()*10) > 5 ? -1 : 1);
 	options.reproductionAfter.age = reproductionAge > 0 && reproductionAge < options.lifeTime ? reproductionAge : 1;
 	options.reproductionAfter.fat = options.reproductionAfter.age*10;
 
 	return _.extend(
 		options,
 		randVal > env.chance/2 ? this.changeLifeTime() : {},
-		randVal == Math.round(env.chance/3) ? this.changeColor() : {},
+		randVal == Math.round(env.chance/3) ? this.changeColor() : {color: this.color},
 		randVal > env.chance/10 && randVal < 2*env.chance/10 ? this.changeMovable() : {}
 	);
 };
@@ -112,15 +116,21 @@ Cell.prototype.changeSize = function() {
 Cell.prototype.changeLifeTime = function() {
 	var lifeRandom = Math.round(Math.random()*10);
 	var lifeTime = this.lifeTime + (lifeRandom > 5 ? (5 - lifeRandom) : lifeRandom);
+
 	return {
 		lifeTime: lifeTime,
 		timeLeft: lifeTime
 	};
 };
 
+/**
+ * Changes cells color
+ * @returns {Object} Returns new color of cell
+ */
 Cell.prototype.changeColor = function() {
 	var colorNum = Math.round(Math.random()*3);
 	var color = this.color;
+
 	color[colorNum] = this.color[colorNum] + 5 < 255 ? this.color[colorNum] + 5 : 0;
 	return {
 		color: color
