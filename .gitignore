@@ -1,0 +1,17 @@
+# compiled output
+/dist
+/tmp
+
+# dependencies
+/node_modules
+/vendor/*
+!/vendor/_loader.js
+
+# misc
+/.sass-cache
+.DS_Store
+Thumbs.db
+npm-debug.log
+testem.log
+hts-cache/*
+hts-log.txt

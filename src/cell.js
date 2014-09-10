@@ -1,6 +1,7 @@
 var renderAll = function() {
 	env.cataclysm();
 
+
 	var canvas = document.getElementById('field');
 	var ctx = canvas.getContext('2d');
 	var rgb, 
