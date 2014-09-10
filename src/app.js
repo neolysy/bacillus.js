@@ -29,13 +29,12 @@ function Environment() {
 			this.cataclysm();
 		}
 
-		var canvas = document.getElementById('field');
-		var ctx = canvas.getContext('2d');
+		var ctx = this.canvas.getContext('2d');
 		var cellsArr = [];
 		var self = this;
 		var rgb, canReproduce;
 
-		ctx.clearRect ( 0 , 0 , canvas.width, canvas.height );
+		ctx.clearRect ( 0 , 0 , this.canvas.width, this.canvas.height );
 
 		this.population.forEach(function(cell, index) {
 			rgb = cell.color;

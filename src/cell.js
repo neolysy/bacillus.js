@@ -16,7 +16,7 @@ function Cell(options) {
 		fat: 30
 	};
 	this.fatPerReproduce = this.reproductionAfter.fat;
-	//this.color = [33, 87, 181];
+	this.color = [33, 87, 181];
 
 	this.pos = [Math.round(env.maxLeft/(2*this.size)),Math.round(env.maxTop/(2*this.size))];
 	this.fat = 0;
@@ -40,7 +40,12 @@ Cell.prototype.move = function() {
 			this.pos = freePlace;
 		}
 	}
+
+	return this;
 };
+
+Cell.prototype.ass = function() {return 'ass';};
+
 
 Cell.prototype.reproduce = function() {
 	var nearestPlace, options;
