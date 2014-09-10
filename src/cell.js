@@ -5,7 +5,7 @@
  */
 function Cell(options) {
 	this.size = 2;
-	this.lifeTime = 50;
+	this.lifeTime = 30;
 	this.timeLeft = this.lifeTime;
 	this.fatPerIteration = 10;
 	this.fatPerMove = 1;
@@ -46,8 +46,8 @@ Cell.prototype.reproduce = function() {
 	var nearestPlace, options;
 
 	this.fat -= this.fatPerReproduce;
-
 	nearestPlace = this.getNearestFreePlace();
+
 	if (!nearestPlace) return false;
 
 	options = this.getChildOptions({pos: nearestPlace});
@@ -58,7 +58,7 @@ Cell.prototype.reproduce = function() {
 Cell.prototype.canReproduce = function() {
 	var options = this.reproductionAfter;
 	return this.fat >= options.fat && 
-			env.cells.length < env.maxPopulation && 
+			env.population.length < env.maxPopulation && 
 			(this.lifeTime - this.timeLeft >= options.age);
 };
 
@@ -97,19 +97,20 @@ Cell.prototype.getChildOptions = function(defaults) {
 
 	return _.extend(
 		options,
-		randVal > env.chance/2 ? this.changeLifeTime() : {},
-		randVal == Math.round(env.chance/3) ? this.changeColor() : {color: this.color},
-		randVal > env.chance/10 && randVal < 2*env.chance/10 ? this.changeMovable() : {}
+		randVal > env.chance/2 ? this.getMutatedLifeTime() : {},
+		randVal == Math.round(env.chance/3) ? this.getMutatedColor() : {color: this.color},
+		randVal > env.chance/10 && randVal < 2*env.chance/10 ? this.getMutatedMobility() : {}
 	);
 };
 
+
 //mutations
 
-Cell.prototype.changeSize = function() {
-	return {size: this.size + 1};
-};
-
-Cell.prototype.changeLifeTime = function() {
+/**
+ * Changes cells lifeTime
+ * @returns {Object} Returns object with new lifeTime and lifeLeft of cell
+ */
+Cell.prototype.getMutatedLifeTime = function() {
 	var lifeRandom = Math.round(Math.random()*10);
 	var lifeTime = this.lifeTime + (lifeRandom > 5 ? (5 - lifeRandom) : lifeRandom);
 
@@ -123,25 +124,32 @@ Cell.prototype.changeLifeTime = function() {
  * Changes cells color
  * @returns {Object} Returns new color of cell
  */
-Cell.prototype.changeColor = function() {
+Cell.prototype.getMutatedColor = function() {
 	var colorNum = Math.round(Math.random()*3);
-	var color = this.color;
+	var color = [];
 
-	color[colorNum] = this.color[colorNum] + 5 < 255 ? this.color[colorNum] + 5 : 0;
+	for (var i = 0; i < 3; i++) {
+		if (i == colorNum) {
+			color[i] = this.color[colorNum] + 5 < 255 ? this.color[colorNum] + 5 : 0;
+		} else {
+			color[i] = this.color[i];
+		}
+	}
+
 	return {
 		color: color
 	};
 };
 
-Cell.prototype.changeMovable = function() {
+/**
+ * Changes cells mobility, cells can't move by default
+ * @returns {Object} Returns set of new params including canMove
+ */
+Cell.prototype.getMutatedMobility = function() {
 	return {
 		canMove: true,
 		lifeTime: this.lifeTime + 100,
-		timeLeft: this.lifeTime + 100,
-		fatPerIteration: 15,
-		reproductionAfter: {
-			age: this.reproductionAfter.age - 2,
-			fat: this.reproductionAfter.fat - 10
-		}
+		timeLeft: this.lifeTime + 10,
+		fatPerIteration: 15
 	};
 };

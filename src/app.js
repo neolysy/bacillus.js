@@ -1,45 +1,43 @@
-/** @namespace */
-env = {
-	population: [],
-	places: [],
-	maxLeft: 1000,
-	maxTop: 1000,
-	maxPopulation: 15000,
-	chance: 1000,
-	canvas: null,
-	iterator: null,
+/**
+ * Represents an Environment.
+ * @constructor
+ */
+function Environment() {
+	this.population = [];
+	this.places = [];
+	this.maxLeft = 1000;
+	this.maxTop = 1000;
+	this.maxPopulation = 5000;
+	this.chance = 500;
+	this.canvas = null;
+	this.iterator = null;
 
-	init: function() {
+	this.init = function() {
 		this.canvas = document.getElementById('field');
-		this.canvas.width = env.maxLeft;
-		this.canvas.height = env.maxTop;
+		this.canvas.width = this.maxLeft;
+		this.canvas.height = this.maxTop;
 
-		// creates first cell
-		
-		var parent = new Cell({pos: [50, 100], color: [15, 207, 110]});
-		var parent2 = new Cell({pos: [75, 75], color: [33, 87, 181]});
-		var parent3 = new Cell({pos: [85, 65], color: [175, 15, 15]});
-
-		this.addCell(parent);
-		this.addCell(parent2);
-		this.addCell(parent3);
+		this.addCell(new Cell({pos: [50, 100], color: [15, 207, 110]}));
+		this.addCell(new Cell({pos: [75, 75], color: [33, 87, 181]}));
+		this.addCell(new Cell({pos: [85, 65], color: [175, 15, 15]}));
 
 		this.attachEvents();
-	},
+	};
 
-	render: function() {
+	this.render = function() {
 		if (config.useCataclysm) {
-			env.cataclysm();
+			this.cataclysm();
 		}
 
 		var canvas = document.getElementById('field');
 		var ctx = canvas.getContext('2d');
 		var cellsArr = [];
+		var self = this;
 		var rgb, canReproduce;
 
 		ctx.clearRect ( 0 , 0 , canvas.width, canvas.height );
 
-		env.population.forEach(function(cell, index) {
+		this.population.forEach(function(cell, index) {
 			rgb = cell.color;
 			ctx.fillStyle = "rgb(" + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ")";
 			ctx.fillRect(cell.pos[0]*cell.size, cell.pos[1]*cell.size, cell.size, cell.size);
@@ -58,19 +56,19 @@ env = {
 					cell.move();
 				}
 			} else {
-				delete env.places[cell.pos[0]][cell.pos[1]];
+				delete self.places[cell.pos[0]][cell.pos[1]];
 			}
 		});
 
-		env.population = cellsArr;
-	},
+		this.population = cellsArr;
+	};
 
 	/**
 	 * Adds new cell instance to population array
 	 * @param {object} cell - Cell inctance
 	 * @returns {array} Returns updated population array
 	 */
-	addCell: function(cell) {
+	this.addCell = function(cell) {
 		if (_.isUndefined(this.places[cell.pos[0]])) {
 			this.places[cell.pos[0]] = [];
 		}
@@ -78,9 +76,9 @@ env = {
 		this.population.push(cell);
 
 		return this.population;
-	},
+	};
 
-	cataclysm: function() {
+	this.cataclysm = function() {
 		var randVal = Math.round(Math.random()*200);
 		if (randVal !== 27) return;
 
@@ -102,48 +100,49 @@ env = {
 
 		this.population = res;
 		this.play();
-	},
+	};
 
-	getCataclysmConditions: function() {
-		var lifeTimeMax = _.max(this.population, function(cell){ return cell.lifeTime; }),
-			lifeTimeMin = _.min(this.population, function(cell){ return cell.lifeTime; }),
-			lifeTime = (lifeTimeMax.lifeTime + lifeTimeMin.lifeTime)/2;
+	this.getCataclysmConditions = function() {
+		var lifeTimeMax = _.max(this.population, function(cell){ return cell.lifeTime; });
+		var lifeTimeMin = _.min(this.population, function(cell){ return cell.lifeTime; });
+		var lifeTime = (lifeTimeMax.lifeTime + lifeTimeMin.lifeTime)/2;
 
 		return {
 			lifeTime: lifeTime,
 			timeLeft: lifeTime/2
 		};
-	},
+	};
 
-	attachEvents: function() {
+	this.attachEvents = function() {
 		this.canvas.addEventListener('click', _.bind(function() {
 			this[this.iterator ? 'stop' : 'play']();
 		}, this), false);
 
 		return this.canvas;
-	},
+	};
 
 	/**
 	 * Starts population actions
 	 * @returns {Object} Returns current environment instance
 	 */
-	play: function() {
-		this.iterator = setInterval(this.render, 100);
+	this.play = function() {
+		this.iterator = setInterval(_.bind(this.render, this), 100);
 		return this;
-	},
+	};
 
 	/**
 	 * Stops all actions in environment
 	 * @returns {Object} Returns current environment instance
 	 */
-	stop: function() {
+	this.stop = function() {
 		clearInterval(this.iterator);
 		this.iterator = null;
 
 		return this;
-	}
-};
+	};
+}
 
 (function() {
+	env = new Environment();
 	env.init();
 })();
