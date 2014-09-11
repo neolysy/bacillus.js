@@ -1,11 +1,16 @@
 /**
+ * @overview Demonstrate simpe genetic algoritm.
+ * @author Yevhen Lysyakov
+ */
+
+/**
  * Represents an Environment.
  * @constructor
  */
 function Environment() {
 	this.population = [];
 	this.places = [];
-	this.maxPopulation = 5000;
+	this.maxPopulation = 10000;
 	this.chance = 500;
 	this.canvas = document.getElementById('field');
 	this.iterator = null;
@@ -79,6 +84,11 @@ function Environment() {
 		return result;
 	};
 
+	/**
+	 * Updates all living cells in population
+	 * @param {array} population - Cells collection
+	 * @returns {array} Returns updated population array
+	 */
 	this.updateLivingPopulation = function(population) {
 		var result = [];
 		var self = this;
@@ -136,7 +146,10 @@ function Environment() {
 				_.extend(cell, cell.getMutatedColor());
 				res.push(cell);
 			} else {
-				this.places[cell.pos[0]][cell.pos[1]] = 0;
+				// @TODO remove condition
+				if (this.places[cell.pos[0]]) {
+					this.places[cell.pos[0]][cell.pos[1]] = 0;
+				}
 			}
 		}, this));
 

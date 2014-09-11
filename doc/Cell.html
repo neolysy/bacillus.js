@@ -109,6 +109,172 @@
 <dl class="details">
     
         
+        <h5 class="subsection-title">Properties:</h5>
+        
+        <dl>
+
+<table class="props">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>size</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Size in pixels</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>lifeTime</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Life time in iterations</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>timeLeft</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Iterations left</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>fatPerIteration</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Fat loss per iteration</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>fatPerMove</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Integer</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Fat loss per move</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>canMove</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">Cells mobility</td>
+        </tr>
+	
+	
+	</tbody>
+</table></dl>
+        
+    
+        
     
     
     
@@ -128,7 +294,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line6">line 6</a>
+        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line13">line 13</a>
     </li></ul></dd>
     
     
@@ -174,6 +340,145 @@
         <dl>
             
 <dt>
+    <h4 class="name" id="getChildOptions"><span class="type-signature"></span>getChildOptions<span class="signature">(defaults)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Prepares cells properties for reproducing
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>defaults</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">options for properties extension</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line119">line 119</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    Returns object with new cells properties
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
     <h4 class="name" id="getMutatedColor"><span class="type-signature"></span>getMutatedColor<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
@@ -215,7 +520,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line146">line 146</a>
+        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line159">line 159</a>
     </li></ul></dd>
     
     
@@ -306,7 +611,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line132">line 132</a>
+        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line145">line 145</a>
     </li></ul></dd>
     
     
@@ -397,7 +702,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line167">line 167</a>
+        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line180">line 180</a>
     </li></ul></dd>
     
     
@@ -488,7 +793,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line31">line 31</a>
+        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line38">line 38</a>
     </li></ul></dd>
     
     
@@ -579,7 +884,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line57">line 57</a>
+        <a href="cell.js.html">cell.js</a>, <a href="cell.js.html#line64">line 64</a>
     </li></ul></dd>
     
     
@@ -648,7 +953,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Sep 11 2014 17:48:44 GMT+0200 (GMT+02:00)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Thu Sep 11 2014 20:22:53 GMT+0200 (GMT+02:00)
 </footer>
 
 <script> prettyPrint(); </script>
