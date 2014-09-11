@@ -18,7 +18,7 @@ function Cell(options) {
 	this.fatPerReproduce = this.reproductionAfter.fat;
 	this.color = [33, 87, 181];
 
-	this.pos = [Math.round(env.maxLeft/(2*this.size)),Math.round(env.maxTop/(2*this.size))];
+	this.pos = [Math.round(config.fieldWidth/(2*this.size)),Math.round(config.fieldHeight/(2*this.size))];
 	this.fat = 0;
 
 	_.extend(this, options || {});
@@ -73,9 +73,9 @@ Cell.prototype.getNearestFreePlace = function() {
 		res = [];
 
 	for (var i = left + 1; i >= left - 1; i -= 1) {
-		if (i < env.maxLeft && i >= 0) {
+		if (i < config.fieldWidth && i >= 0) {
 			for (var j = top + 1; j >= top - 1; j -= 1) {
-				if (j < env.maxTop && j >= 0 && (_.isUndefined(env.places[i]) || _.isUndefined(env.places[i][j]))) {
+				if (j < config.fieldHeight && j >= 0 && (_.isUndefined(env.places[i]) || _.isUndefined(env.places[i][j]))) {
 					res.push([i, j]);
 				}
 			}

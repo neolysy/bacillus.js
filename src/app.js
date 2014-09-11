@@ -5,17 +5,18 @@
 function Environment() {
 	this.population = [];
 	this.places = [];
-	this.maxLeft = 1000;
-	this.maxTop = 1000;
 	this.maxPopulation = 5000;
 	this.chance = 500;
-	this.canvas = null;
+	this.canvas = document.getElementById('field');
 	this.iterator = null;
 
+	this.getDoc = function() {
+		return document.getElementById('field');
+	};
+
 	this.init = function() {
-		this.canvas = document.getElementById('field');
-		this.canvas.width = this.maxLeft;
-		this.canvas.height = this.maxTop;
+		this.canvas.width = config.fieldWidth;
+		this.canvas.height = config.fieldHeight;
 
 		this.addCell(new Cell({pos: [50, 100], color: [15, 207, 110]}));
 		this.addCell(new Cell({pos: [75, 75], color: [33, 87, 181]}));
@@ -34,7 +35,7 @@ function Environment() {
 		var self = this;
 		var rgb, canReproduce;
 
-		ctx.clearRect ( 0 , 0 , this.canvas.width, this.canvas.height );
+		ctx.clearRect ( 0 , 0 , config.fieldWidth, config.fieldHeight );
 
 		this.population.forEach(function(cell, index) {
 			rgb = cell.color;
@@ -77,6 +78,10 @@ function Environment() {
 		return this.population;
 	};
 
+	/**
+	 * Removes weak cells depending on several conditions
+	 * @returns {Object} Returns current environment instance
+	 */
 	this.cataclysm = function() {
 		var randVal = Math.round(Math.random()*200);
 		if (randVal !== 27) return;
@@ -99,6 +104,8 @@ function Environment() {
 
 		this.population = res;
 		this.play();
+
+		return this;
 	};
 
 	this.getCataclysmConditions = function() {
@@ -112,6 +119,10 @@ function Environment() {
 		};
 	};
 
+	/**
+	 * Attaches events to canvas
+	 * @returns {Object} Returns canvas DOM-element
+	 */
 	this.attachEvents = function() {
 		this.canvas.addEventListener('click', _.bind(function() {
 			this[this.iterator ? 'stop' : 'play']();
