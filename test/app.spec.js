@@ -5,8 +5,4 @@ describe('Environment module', function() {
         env = new Environment();
         //env.init();
     });
-
-    it('Should return valid data', function() {
-        expect(env.getDoc()).toBeNull();
-    });
 });

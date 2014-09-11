@@ -10,57 +10,95 @@ function Environment() {
 	this.canvas = document.getElementById('field');
 	this.iterator = null;
 
-	this.getDoc = function() {
-		return document.getElementById('field');
-	};
-
 	this.init = function() {
 		this.canvas.width = config.fieldWidth;
 		this.canvas.height = config.fieldHeight;
 
 		this.addCell(new Cell({pos: [50, 100], color: [15, 207, 110]}));
-		this.addCell(new Cell({pos: [75, 75], color: [33, 87, 181]}));
-		this.addCell(new Cell({pos: [85, 65], color: [175, 15, 15]}));
+		//this.addCell(new Cell({pos: [75, 75], color: [33, 87, 181]}));
+		//this.addCell(new Cell({pos: [85, 65], color: [175, 15, 15]}));
 
 		this.attachEvents();
 	};
 
+	/**
+	 * Draws cells to the canvas and updates population
+	 * @returns {array} Returns updated population array
+	 */
 	this.render = function() {
 		if (config.useCataclysm) {
 			this.cataclysm();
 		}
 
 		var ctx = this.canvas.getContext('2d');
-		var cellsArr = [];
 		var self = this;
-		var rgb, canReproduce;
+		var rgb, canReproduce, tempPopulation;
 
+		tempPopulation = this.removeOldCells(this.population);
+		tempPopulation = this.updateLivingPopulation(tempPopulation);
+
+		// draws our cells
 		ctx.clearRect ( 0 , 0 , config.fieldWidth, config.fieldHeight );
 
-		this.population.forEach(function(cell, index) {
+		tempPopulation.forEach(function(cell, index) {
 			rgb = cell.color;
 			ctx.fillStyle = "rgb(" + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ")";
 			ctx.fillRect(cell.pos[0]*cell.size, cell.pos[1]*cell.size, cell.size, cell.size);
+		});
 
-			cell.timeLeft--;
-			cell.fat += cell.fatPerIteration;
-			
-			if (cell.timeLeft !== 0) {
-				cellsArr.push(cell);
-				canReproduce = cell.canReproduce();
+		// just for test
+		// tempPopulation.forEach(function(item) {
+		// 	tempPopulation.forEach(function(secondItem) {
+		// 		if (item.pos[0] == secondItem.pos[0] && item.pos[1] == secondItem.pos[1]) {
+		// 			console.log('Blio!');
+		// 		}
+		// 	});
+		// });
 
-				if (canReproduce) {
-					var child = cell.reproduce();
-					if (child) cellsArr.push(child);
-				} else if (!canReproduce && cell.canMove) {
-					cell.move();
-				}
+		this.population = tempPopulation;
+		return this;
+	};
+
+	/**
+	 * Removes old cells from population and releases free places
+	 * @param {array} population - Cells collection
+	 * @returns {array} Returns updated population array
+	 */
+	this.removeOldCells = function(population) {
+		var result = [];
+		var self = this;
+
+		population.forEach(function(cell) {
+			if (cell.timeLeft < 1) {
+				self.places[cell.pos[0]][cell.pos[1]] = 0;
 			} else {
-				delete self.places[cell.pos[0]][cell.pos[1]];
+				result.push(cell);
 			}
 		});
 
-		this.population = cellsArr;
+		return result;
+	};
+
+	this.updateLivingPopulation = function(population) {
+		var result = [];
+		var self = this;
+
+		population.forEach(function(cell) {
+			cell.timeLeft--;
+			cell.fat += cell.fatPerIteration;
+			
+			result.push(cell);
+			canReproduce = cell.canReproduce(population);
+
+			if (canReproduce) {
+				var child = cell.reproduce();
+				if (child) result.push(child);
+			} else if (!canReproduce && cell.canMove) {
+				cell.move();
+			}
+		});
+
+		return result;
 	};
 
 	/**
@@ -72,7 +110,7 @@ function Environment() {
 		if (_.isUndefined(this.places[cell.pos[0]])) {
 			this.places[cell.pos[0]] = [];
 		}
-		this.places[cell.pos[0]][cell.pos[1]] = true;
+		this.places[cell.pos[0]][cell.pos[1]] = 1;
 		this.population.push(cell);
 
 		return this.population;
@@ -95,10 +133,10 @@ function Environment() {
 
 		this.population.forEach(_.bind(function(cell, index) {
 			if (cell.lifeTime > cond.lifeTime && cell.timeLeft > cond.timeLeft) {
-				_.extend(cell, cell.changeColor());
+				_.extend(cell, cell.getMutatedColor());
 				res.push(cell);
 			} else {
-				this.places[cell.pos[0]][cell.pos[1]] = undefined;
+				this.places[cell.pos[0]][cell.pos[1]] = 0;
 			}
 		}, this));
 
@@ -136,7 +174,7 @@ function Environment() {
 	 * @returns {Object} Returns current environment instance
 	 */
 	this.play = function() {
-		this.iterator = setInterval(_.bind(this.render, this), 100);
+		this.iterator = setInterval(_.bind(this.render, this), config.timeFrame);
 		return this;
 	};
 
