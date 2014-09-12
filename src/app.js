@@ -10,8 +10,8 @@
 function Environment() {
 	this.population = [];
 	this.places = [];
-	this.maxPopulation = 10000;
-	this.chance = 500;
+	this.maxPopulation = 5000;
+	this.chance = 100;
 	this.canvas = document.getElementById('field');
 	this.iterator = null;
 
@@ -19,7 +19,7 @@ function Environment() {
 		this.canvas.width = config.fieldWidth;
 		this.canvas.height = config.fieldHeight;
 
-		this.addCell(new Cell({pos: [50, 100], color: [15, 207, 110]}));
+		this.addCell(new Cell({pos: [150, 150], color: [15, 207, 110]}));
 		//this.addCell(new Cell({pos: [75, 75], color: [33, 87, 181]}));
 		//this.addCell(new Cell({pos: [85, 65], color: [175, 15, 15]}));
 
@@ -102,7 +102,14 @@ function Environment() {
 
 			if (canReproduce) {
 				var child = cell.reproduce();
-				if (child) result.push(child);
+				if (child) {
+					if (!self.places[child.pos[0]]) {
+						self.places[child.pos[0]] = [];
+					}
+					self.places[child.pos[0]][child.pos[1]] = 1;
+
+					result.push(child);
+				}
 			} else if (!canReproduce && cell.canMove) {
 				cell.move();
 			}
@@ -113,8 +120,8 @@ function Environment() {
 
 	/**
 	 * Adds new cell instance to population array
-	 * @param {object} cell - Cell inctance
-	 * @returns {array} Returns updated population array
+	 * @param {Object} cell - Cell inctance
+	 * @returns {Array} Returns updated population array
 	 */
 	this.addCell = function(cell) {
 		if (_.isUndefined(this.places[cell.pos[0]])) {

@@ -82,6 +82,10 @@ Cell.prototype.canReproduce = function(population) {
 			(this.lifeTime - this.timeLeft >= options.age);
 };
 
+/**
+ * Finds nearest to cell free place
+ * @returns {Array} Returns coordinates of place
+ */
 Cell.prototype.getNearestFreePlace = function() {
 	var left = this.pos[0];
 	var top = this.pos[1];
