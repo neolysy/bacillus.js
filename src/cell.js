@@ -166,7 +166,7 @@ Cell.prototype.getMutatedColor = function() {
 
 	for (var i = 0; i < 3; i++) {
 		if (i == colorNum) {
-			color[i] = this.color[colorNum] + 5 < 255 ? this.color[colorNum] + 5 : 0;
+			color[i] = this.color[i] + 5 < 255 ? this.color[i] + 5 : 0;
 		} else {
 			color[i] = this.color[i];
 		}
