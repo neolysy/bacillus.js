@@ -16,10 +16,10 @@ Cataclysm = {
 
 		switch (randVal) {
 			case 1:
-				this.lifeTimeCataclysm();
+				this.lifeTimeCataclysm(this.getSourcePoint());
 				break;
 			case 2:
-				this.colorCataclysm();
+				this.colorCataclysm(this.getSourcePoint());
 				break;
 			default:
 				break;
@@ -30,16 +30,15 @@ Cataclysm = {
 
 	/**
 	 * Removes weak cells depending on lifeTime
+	 * @param {array} source - cataclysm source coordinates
 	 */
-	lifeTimeCataclysm: function() {
+	lifeTimeCataclysm: function(source) {
 		console.log('lifeTimeCataclysm');
 		
 		var self = this;
 		var res = [];
 		var distanceToSource;
 		var cataclysmRadius = Math.random() * config.cataclysmLifeTimeRadius;
-
-		var source = this.getSourcePoint();
 
 		var lifeTimeMax = _.max(this.population, function(cell){ return cell.lifeTime; });
 		var lifeTimeMin = _.min(this.population, function(cell){ return cell.lifeTime; });
@@ -66,8 +65,9 @@ Cataclysm = {
 
 	/**
 	 * Changes cells color near source point
+	 * @param {array} source - cataclysm source coordinates
 	 */
-	colorCataclysm: function() {
+	colorCataclysm: function(source) {
 		console.log('colorCataclysm');
 		
 		var res = [];
@@ -75,8 +75,6 @@ Cataclysm = {
 		var distanceToSource;
 		var cataclysmRadius = Math.random() * 10;
 		var i, color;
-
-		var source = this.getSourcePoint();
 
 		var minLifeTimeCell = _.min(this.population, function(cell){ return cell.lifeTime; });
 		var minLifeTimePart = minLifeTimeCell.lifeTime/cataclysmRadius;

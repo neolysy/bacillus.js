@@ -10,7 +10,7 @@
 function Environment() {
 	this.population = [];
 	this.places = [];
-	this.maxPopulation = 5000;
+	this.maxPopulation = 10000;
 	this.chance = 100;
 	this.canvas = document.getElementById('field');
 	this.iterator = null;
@@ -139,8 +139,14 @@ function Environment() {
 	 * @returns {Object} Returns canvas DOM-element
 	 */
 	this.attachEvents = function() {
-		this.canvas.addEventListener('click', _.bind(function() {
-			this[this.iterator ? 'stop' : 'play']();
+		var x, y;
+
+		this.canvas.addEventListener('click', _.bind(function(e) {
+			//this[this.iterator ? 'stop' : 'play']();
+			x = e.pageX - this.canvas.offsetLeft;
+  			y = e.pageY - this.canvas.offsetTop;
+  			
+  			this.lifeTimeCataclysm([x/2, y/2]);
 		}, this), false);
 
 		return this.canvas;
@@ -170,4 +176,5 @@ function Environment() {
 (function() {
 	env = new Environment();
 	env.init();
+	env.play();
 })();
