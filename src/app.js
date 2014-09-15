@@ -140,6 +140,7 @@ function Environment() {
 	 */
 	this.attachEvents = function() {
 		var x, y;
+		var self = this;
 
 		this.canvas.addEventListener('click', _.bind(function(e) {
 			//this[this.iterator ? 'stop' : 'play']();
@@ -148,6 +149,15 @@ function Environment() {
   			
   			this.lifeTimeCataclysm([x/2, y/2]);
 		}, this), false);
+
+
+		window.onkeyup = function(e) {
+			var key = e.keyCode ? e.keyCode : e.which;
+
+			if (key == 80) {
+				self[self.iterator ? 'stop' : 'play']();
+			}
+		};
 
 		return this.canvas;
 	};
