@@ -34,7 +34,7 @@ Cataclysm = {
 	 */
 	lifeTimeCataclysm: function(source) {
 		console.log('lifeTimeCataclysm');
-		
+
 		var self = this;
 		var res = [];
 		var distanceToSource;
@@ -42,18 +42,18 @@ Cataclysm = {
 
 		var lifeTimeMax = _.max(this.population, function(cell){ return cell.lifeTime; });
 		var lifeTimeMin = _.min(this.population, function(cell){ return cell.lifeTime; });
-		var lifeTimePart = (lifeTimeMax.lifeTime + lifeTimeMin.lifeTime) / (2 * cataclysmRadius);
+		var lifeTimePart = (lifeTimeMax.lifeTime + lifeTimeMin.lifeTime) / 2;
 
 		this.population.forEach(function(cell, index) {
-			distanceToSource = Math.sqrt((cell.pos[0] - source[0])*(cell.pos[0] - source[0]) + (cell.pos[1] - source[1])*(cell.pos[1] - source[1]));
+			distanceToSource = utils.getDistance(cell.pos, source);
 
 			if (distanceToSource < cataclysmRadius) {
-				cell.timeLeft -= lifeTimePart * (cataclysmRadius - distanceToSource);
+				cell.timeLeft -= lifeTimePart / distanceToSource;
 				if (cell.timeLeft < 1) {
 					self.places[cell.pos[0]][cell.pos[1]] = 0;
 				} else {
 					//_.extend(cell, cell.getMutatedColor());
-					res.push(cell);		
+					res.push(cell);
 				}
 			} else {
 				res.push(cell);
@@ -69,7 +69,7 @@ Cataclysm = {
 	 */
 	colorCataclysm: function(source) {
 		console.log('colorCataclysm');
-		
+
 		var res = [];
 		var newCell;
 		var distanceToSource;
@@ -80,17 +80,14 @@ Cataclysm = {
 		var minLifeTimePart = minLifeTimeCell.lifeTime/cataclysmRadius;
 
 		this.population.forEach(function(cell, index) {
-			distanceToSource = Math.sqrt((cell.pos[0] - source[0])*(cell.pos[0] - source[0]) + (cell.pos[1] - source[1])*(cell.pos[1] - source[1]));
+			distanceToSource = utils.getDistance(cell.pos, source);
 
 			if (distanceToSource < cataclysmRadius) {
-				i = Math.round(Math.random() * 2);
-				color = Math.round((cell.color[i] + distanceToSource)%255);
+                i = Math.round(Math.random() * 2);
+				color = Math.round(distanceToSource%255);
 				cell.color[i] = color;
 			}
-			res.push(cell);
 		});
-
-		this.population = res;
 	},
 
 	/**

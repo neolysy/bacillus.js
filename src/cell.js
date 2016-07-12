@@ -11,12 +11,12 @@
  * @property {Boolean} canMove - Cells mobility
  */
 function Cell(options) {
-	this.size = 2;
+	this.size = 1;
 	this.lifeTime = 30;
-	this.timeLeft = this.lifeTime;
+	this.timeLeft = 30;
 	this.fatPerIteration = 10;
 	this.fatPerMove = 1;
-	this.canMove = false;
+	this.canMove = true;
 	this.moveStep = 5;
 	this.reproductionAfter = {
 		age: 3,
@@ -25,7 +25,7 @@ function Cell(options) {
 	this.fatPerReproduce = this.reproductionAfter.fat;
 	this.color = [33, 87, 181];
 
-	this.pos = [Math.round(config.fieldWidth/(2*this.size)),Math.round(config.fieldHeight/(2*this.size))];
+	this.pos = [Math.round(config.fieldWidth),Math.round(config.fieldHeight)];
 	this.fat = 0;
 
 	_.extend(this, options || {});
@@ -38,17 +38,18 @@ function Cell(options) {
 Cell.prototype.move = function() {
 	// Cell should have enough fat to move
 	if (this.fat > this.fatPerMove * 2) {
-		this.fat -= this.fatPerMove;
 		var freePlace = this.getNearestFreePlace();
 
-		if (freePlace) {
-			if (env.places[this.pos[0]] && env.places[this.pos[0]][this.pos[1]]) {
-				env.places[this.pos[0]][this.pos[1]] = 0;
-			}
-			if (_.isUndefined(env.places[freePlace[0]])) {
-				env.places[freePlace[0]] = [];
-			}
-			env.places[freePlace[0]][freePlace[1]] = 1;
+		if (freePlace && env.places[this.pos[0]][this.pos[1]].food < this.fatPerIteration*2) {
+            this.fat -= this.fatPerMove;
+
+			// if (env.places[this.pos[0]] && env.places[this.pos[0]][this.pos[1]]) {
+			// 	env.places[this.pos[0]][this.pos[1]] = 0;
+			// }
+			// if (_.isUndefined(env.places[freePlace[0]])) {
+			// 	env.places[freePlace[0]] = [];
+			// }
+			// env.places[freePlace[0]][freePlace[1]] = 1;
 
 			this.pos = freePlace;
 		}
@@ -76,9 +77,9 @@ Cell.prototype.reproduce = function() {
 
 Cell.prototype.canReproduce = function(population) {
 	var options = this.reproductionAfter;
-	
-	return this.fat >= options.fat && 
-			population.length < env.maxPopulation && 
+
+	return this.fat >= options.fat &&
+			population.length < env.maxPopulation &&
 			(this.lifeTime - this.timeLeft >= options.age);
 };
 
@@ -99,9 +100,7 @@ Cell.prototype.getNearestFreePlace = function() {
 
 	for (i = leftMax; i >= leftMin; i -= 1) {
 		for (j = topMax; j >= topMin; j -= 1) {
-			if (_.isUndefined(env.places[i]) || !env.places[i][j]) {
-				res.push([i, j]);
-			}
+			res.push([i, j]);
 		}
 	}
 
@@ -111,7 +110,7 @@ Cell.prototype.getNearestFreePlace = function() {
 		return res[index];
 	}
 
-	// console.log('NOT FOUND'); 
+	// console.log('NOT FOUND');
 	return false;
 };
 
@@ -134,7 +133,7 @@ Cell.prototype.getChildOptions = function(defaults) {
 	return _.extend(
 		options,
 		randVal > env.chance/2 ? this.getMutatedLifeTime() : {},
-		randVal == Math.round(env.chance/3) ? this.getMutatedColor() : {color: this.color},
+		randVal == Math.round(env.chance/3) ? this.getMutatedColor() : {color: _.clone(this.color)},
 		randVal > env.chance/10 && randVal < 2*env.chance/10 ? this.getMutatedMobility() : {}
 	);
 };

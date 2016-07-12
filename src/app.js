@@ -10,7 +10,7 @@
 function Environment() {
 	this.population = [];
 	this.places = [];
-	this.maxPopulation = 10000;
+	this.maxPopulation = config.maxPopulation;
 	this.chance = 100;
 	this.canvas = document.getElementById('field');
 	this.iterator = null;
@@ -22,12 +22,24 @@ function Environment() {
 		this.canvas.width = config.fieldWidth;
 		this.canvas.height = config.fieldHeight;
 
-		this.addCell(new Cell({pos: [150, 150], color: [15, 207, 110]}));
-		//this.addCell(new Cell({pos: [75, 75], color: [33, 87, 181]}));
+        this.populatePlaces()
+
+		this.addCell(new Cell({pos: [200, 200], color: [15, 207, 110]}));
+		this.addCell(new Cell({pos: [400, 400], color: [33, 87, 181]}));
 		//this.addCell(new Cell({pos: [85, 65], color: [175, 15, 15]}));
 
 		this.attachEvents();
 	};
+
+    this.populatePlaces = function() {
+        var i, j;
+        for (i = 0; i < config.fieldWidth; i++) {
+            if (!this.places[i]) {this.places[i] = [];}
+            for (j = 0; j < config.fieldHeight; j++) {
+                this.places[i][j] = _.clone(config.place);
+            }
+        }
+    };
 
 	/**
 	 * Draws cells to the canvas and updates population
@@ -75,9 +87,7 @@ function Environment() {
 		var self = this;
 
 		population.forEach(function(cell) {
-			if (cell.timeLeft < 1) {
-				self.places[cell.pos[0]][cell.pos[1]] = 0;
-			} else {
+			if (cell.timeLeft > 0) {
 				result.push(cell);
 			}
 		});
@@ -85,29 +95,53 @@ function Environment() {
 		return result;
 	};
 
+    this.updateCells = function() {
+        this.places.forEach(function(place) {
+            if (place.food == 0 && place.timeFromEmpty < place.timeToProduce) {
+                place.timeToProduce++;
+            } else {
+                place.food += place.growSpeed;
+                place.timeFromEmpty = 0;
+            }
+        });
+    }
+
 	/**
 	 * Updates all living cells in population
 	 * @param {array} population - Cells collection
 	 * @returns {array} Returns updated population array
 	 */
 	this.updateLivingPopulation = function(population) {
-		var result = [];
-		var self = this;
+		var result = [],
+            canReproduce,
+            child,
+		    self = this,
+            place,
+            eaten;
+
+        this.updateCells();
 
 		population.forEach(function(cell) {
+            place = self.places[cell.pos[0]][cell.pos[1]];
+            eaten = place.food > cell.fatPerIteration ? cell.fatPerIteration : place.food
 			cell.timeLeft--;
-			cell.fat += cell.fatPerIteration;
-			
+
+            cell.fat += eaten;
+
+            // updates place
+            self.places[cell.pos[0]][cell.pos[1]].food -= eaten;
+
 			result.push(cell);
 			canReproduce = cell.canReproduce(population);
 
 			if (canReproduce) {
-				var child = cell.reproduce();
+				child = cell.reproduce();
+
 				if (child) {
-					if (!self.places[child.pos[0]]) {
-						self.places[child.pos[0]] = [];
-					}
-					self.places[child.pos[0]][child.pos[1]] = 1;
+					// if (!self.places[child.pos[0]]) {
+					// 	self.places[child.pos[0]] = [];
+					// }
+					// self.places[child.pos[0]][child.pos[1]] = 1;
 
 					result.push(child);
 				}
@@ -125,10 +159,10 @@ function Environment() {
 	 * @returns {Array} Returns updated population array
 	 */
 	this.addCell = function(cell) {
-		if (_.isUndefined(this.places[cell.pos[0]])) {
-			this.places[cell.pos[0]] = [];
-		}
-		this.places[cell.pos[0]][cell.pos[1]] = 1;
+		// if (_.isUndefined(this.places[cell.pos[0]])) {
+		// 	this.places[cell.pos[0]] = [];
+		// }
+		// this.places[cell.pos[0]][cell.pos[1]] = 1;
 		this.population.push(cell);
 
 		return this.population;
@@ -146,8 +180,9 @@ function Environment() {
 			//this[this.iterator ? 'stop' : 'play']();
 			x = e.pageX - this.canvas.offsetLeft;
   			y = e.pageY - this.canvas.offsetTop;
-  			
-  			this.lifeTimeCataclysm([x/2, y/2]);
+
+  			//this.lifeTimeCataclysm([x/2, y/2]);
+            this.colorCataclysm([x, y]);
 		}, this), false);
 
 
